@@ -14,7 +14,9 @@ const fetchMyIP = function(callback) {
   request(`https://api.ipify.org?format=json`, (error, response, body) => {
     // pass through the error to the callback if an error occurs when requesting
     // the IP data
-    if (error) return callback(error, null);
+    if (error) {
+      callback(`Error: ${error}`, null);
+    }
 
     // if non-200 status, assume server error
     if (response.statusCode !== 200) {
@@ -28,11 +30,37 @@ const fetchMyIP = function(callback) {
     const ip = JSON.parse(body).ip;
     callback(null, ip);
 
+
     // if we get here, all's well and we got the data
   });
 };
 
+// It should take in two arguments: ip (string) and callback
+// Add the function to the object properties being exported from iss.js
+// For now, it can have an empty body and do nothing
+const fetchCoordsByIP = function(ip, callback) {
+  request(`http://ipwho.is/${ip}`, (error, resp, body) => {
+    if (error) {
+      callback(`Error: ${error}`, null);
+    }
+
+    const parsedBody = JSON.parse(body);
+
+    if (!parsedBody.success) {
+      const message = `Success status was ${parsedBody.success}. Server message says: ${parsedBody.message} when fetching for IP ${parsedBody.ip}`;
+      callback(Error(message), null);
+      return;
+    }
+    // extract lat and long
+    const { latitude, longitude } = parsedBody;
+
+    callback(null, {latitude, longitude});
+  });
+};
+
+
 module.exports = { fetchMyIP };
+module.exports = { fetchCoordsByIP };
 /*
 const fetchBreedDescription = function(breedName, callback) {
   const url = `https://api.thecatapi.com/v1/breeds/search?q=${breedName}`;
