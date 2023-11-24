@@ -72,7 +72,7 @@ const fetchCoordsByIP = function(ip, callback) {
 const fetchISSFlyOverTimes = function(coords, callback) {
   // Make a request using the following URL: https://iss-flyover.herokuapp.com/json/?lat=YOUR_LAT_INPUT_HERE&lon=YOUR_LON_INPUT_HERE
   const url = `https://iss-flyover.herokuapp.com/json/?lat=${coords.latitude}&lon=${coords.longitude}`;
-  
+
   request(url, (error, response, body) => {
     if (error) {
       callback(`Error: ${error}`, null);
@@ -83,14 +83,54 @@ const fetchISSFlyOverTimes = function(coords, callback) {
       return;
     }
 
-      // output JSON format
+    // output JSON format
     const passes = JSON.parse(body).response;
     callback(null, passes);
   });
 };
 
 
+/**
+ * Orchestrates multiple API requests in order to determine the next 5 upcoming ISS
+ * fly overs for the user's current location.
+ * Input:
+ *   - A callback with an error or results. 
+ * Returns (via Callback):
+ *   - An error, if any (nullable)
+ *   - The fly-over times as an array (null if error):
+ *     [ { risetime: <number>, duration: <number> }, ... ]
+ */
+const nextISSTimesForMyLocation = function(callback) {
+  fetchMyIP((error, ip) => {
+    if (error) {
+      console.log("It didn't work!", error);
+      return;
+    };
+
+    fetchCoordsByIP('162.245.144.188', (error, data) => {
+      if (error) {
+        console.log('Error:', error);
+        return;
+      }
+
+      const givenCoords = { latitude: '49.27670', longitude: '-123.13000' };
+
+      fetchISSFlyOverTimes(givenCoords, (error, passTimes) => {
+        if (error) {
+          console.log("It didn't work!", error);
+          return;
+        }
+
+        callback(null, passTimes)
+      });
+    });
+  });
+};
+
+
+
 
 module.exports = { fetchMyIP };
 module.exports = { fetchCoordsByIP };
 module.exports = { fetchISSFlyOverTimes };
+module.exports = { nextISSTimesForMyLocation };
