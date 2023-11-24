@@ -5,6 +5,31 @@ const { fetchISSFlyOverTimes } = require('./iss');
 const { nextISSTimesForMyLocation } = require('./iss');
 
 
+/** 
+ * Input: 
+ *   Array of data objects defining the next fly-overs of the ISS.
+ *   [ { risetime: <number>, duration: <number> }, ... ]
+ * Returns: 
+ *   undefined
+ * Sideffect: 
+ *   Console log messages to make that data more human readable.
+ *   Example output:
+ *   Next pass at Mon Jun 10 2019 20:11:44 GMT-0700 (Pacific Daylight Time) for 468 seconds!
+ */
+
+const nextFlyOvers = function(time) {
+  for (const pass of time) {
+    // creat date object with timestampJun 10 2019 20:11:44 GMT-0700
+    const dateStamp = new Date(0);
+    // set seconds
+    dateStamp.setUTCSeconds(pass.risetime);
+    const duration = pass.duration;
+    console.log(`Next passing time is at ${datetime} for ${duration} seconds.`);
+  }
+};
+
+
+
 nextISSTimesForMyLocation((error, passTimes) => {
   if (error) {
     return console.log("It didn't work!", error);

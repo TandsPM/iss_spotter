@@ -100,6 +100,12 @@ const fetchISSFlyOverTimes = function(coords, callback) {
  *   - The fly-over times as an array (null if error):
  *     [ { risetime: <number>, duration: <number> }, ... ]
  */
+// Happy Path
+// nextISSTimesForMyLocation
+// fetchMyIP
+// fetchCoordsByIP
+// fetchISSFlyOverTimes
+
 const nextISSTimesForMyLocation = function(callback) {
   fetchMyIP((error, ip) => {
     if (error) {
@@ -107,21 +113,21 @@ const nextISSTimesForMyLocation = function(callback) {
       return;
     };
 
-    fetchCoordsByIP('162.245.144.188', (error, data) => {
-      if (error) {
-        console.log('Error:', error);
-        return;
-      }
+     fetchCoordsByIP('162.245.144.188', (error, data) => {
+       if (error) {
+         console.log('Error:', error);
+         return;
+       }
 
-      const givenCoords = { latitude: '49.27670', longitude: '-123.13000' };
+       const givenCoords = { latitude: '49.27670', longitude: '-123.13000' };
 
-      fetchISSFlyOverTimes(givenCoords, (error, passTimes) => {
-        if (error) {
-          console.log("It didn't work!", error);
-          return;
-        }
+       fetchISSFlyOverTimes(givenCoords, (error, time) => {
+         if (error) {
+           console.log("It didn't work!", error);
+           return;
+         }
 
-        callback(null, passTimes)
+        callback(null, time)
       });
     });
   });
